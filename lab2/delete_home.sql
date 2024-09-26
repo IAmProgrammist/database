@@ -1,0 +1,1 @@
+delete from home where address = 'г. Васи, ул. Васи д. 5';

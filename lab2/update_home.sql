@@ -1,0 +1,1 @@
+update home set commisioning = '2024-09-26' where address = 'г. Васи, ул. Васи д. 8';
