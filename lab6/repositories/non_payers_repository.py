@@ -51,4 +51,3 @@ ORDER BY
 
     def delete(self, identifier: dict) -> None:
         raise ModuleNotFoundError("Невозможно удалить элемент в отчёте")
-

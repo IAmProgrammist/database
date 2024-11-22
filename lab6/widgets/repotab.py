@@ -98,8 +98,8 @@ class RepoTab(QWidget):
     def __update_clicked(self):
         if len(self.ui.tableWidget.selectionModel().selectedRows()) == 0:
             no_update = AcceptRejectDialog(parent=self,
-                                               title="Нечего обновлять",
-                                               text=f"Выберите один ряд для обновления")
+                                           title="Нечего обновлять",
+                                           text=f"Выберите один ряд для обновления")
             no_update.exec()
             return
 
@@ -123,6 +123,6 @@ class RepoTab(QWidget):
                 self.refetch_table()
             except Exception as e:
                 whoops = AcceptRejectDialog(parent=self,
-                                               title="Произошла ошибка",
-                                               text=repr(e))
+                                            title="Произошла ошибка",
+                                            text=repr(e))
                 whoops.show()

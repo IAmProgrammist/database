@@ -63,8 +63,8 @@ class Repository:
             try:
                 values = map(lambda x: 'NULL' if x is None else f"'{x}'", data.values())
                 cursor.execute(f"INSERT INTO {self._table} "
-                                     f" ({', '.join(data.keys())})"
-                                     f" VALUES ({', '.join(values)});")
+                               f" ({', '.join(data.keys())})"
+                               f" VALUES ({', '.join(values)});")
                 self.connection.commit()
             except Exception as e:
                 self.connection.rollback()
@@ -74,8 +74,8 @@ class Repository:
         with self.connection.cursor() as cursor:
             try:
                 cursor.execute(f"UPDATE {self._table} "
-                                     f"SET {', '.join(map(Repository._get_set_identifier, data.items()))}"
-                                     f"WHERE {' AND '.join(map(Repository._get_where_identifier, identifier.items()))};")
+                               f"SET {', '.join(map(Repository._get_set_identifier, data.items()))}"
+                               f"WHERE {' AND '.join(map(Repository._get_where_identifier, identifier.items()))};")
                 self.connection.commit()
             except Exception as e:
                 self.connection.rollback()

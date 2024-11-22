@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class BaseDTOGeneartor(ABC):
     @abstractmethod
     def translations(self) -> dict:
