@@ -1,0 +1,6 @@
+DATABASE=db_course
+USERNAME=postgres
+PASSWORD=postgres
+HOST=localhost
+PORT=5432
+SCHEMA=lab_5
