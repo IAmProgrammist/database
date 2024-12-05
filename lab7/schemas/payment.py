@@ -19,7 +19,7 @@ class PaymentUpdate(TunedModel):
 
     @field_validator("payment")
     def check_payment(cls, value):
-        if value > 0:
+        if value >= 0:
             return value
 
         raise ValueError("Плата должна быть положительной")

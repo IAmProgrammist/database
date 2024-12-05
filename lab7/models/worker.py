@@ -2,7 +2,6 @@ from core.db import Base
 
 from typing import TYPE_CHECKING, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.sql.schema import ForeignKey, Table, Column
 
 if TYPE_CHECKING:
     from models import (  # noqa: F401
@@ -12,13 +11,6 @@ if TYPE_CHECKING:
         Task
     )
 
-workers_tasks = Table(
-    "workers_tasks",
-    Base.metadata,
-    Column("worker_inn", ForeignKey("worker.inn"), primary_key=True),
-    Column("task_id", ForeignKey("task.id"), primary_key=True),
-)
-
 
 class Worker(Base):
     __tablename__ = "worker"
@@ -27,6 +19,6 @@ class Worker(Base):
     email: Mapped[str] = mapped_column(nullable=True)
     phone: Mapped[str] = mapped_column(nullable=True)
     tasks: Mapped[List["Task"]] = relationship(
-        secondary=workers_tasks,
+        secondary="workers_tasks",
         back_populates="workers"
     )

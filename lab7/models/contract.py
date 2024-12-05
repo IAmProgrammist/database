@@ -5,8 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import date
 from sqlalchemy.sql.schema import ForeignKey
 
-from models.resident import residents_contracts
-
 if TYPE_CHECKING:
     from models import (  # noqa: F401
         Home,
@@ -26,7 +24,7 @@ class Contract(Base):
     )
     home: Mapped["Home"] = relationship(back_populates="contracts")
     residents: Mapped[List["Resident"]] = relationship(
-        secondary=residents_contracts,
+        secondary="residents_contracts",
         back_populates="contracts"
     )
     payments: Mapped[List["Payment"]] = relationship(back_populates="contract")

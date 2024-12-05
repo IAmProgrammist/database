@@ -27,11 +27,11 @@ class Repository:
             return [select_model.model_validate(result[0]) for result in results]
 
     def insert(self, data: dict) -> None:
-        select_model = self.generator.insert()
-        if select_model is None:
+        insert_model = self.generator.insert()
+        if insert_model is None:
             raise NotImplementedError(f"Вставить в {self._table.__tablename__} невозможно")
 
-        insert_data = select_model(**data)
+        insert_data = insert_model(**data)
 
         with Session(engine) as session:
             new_object = self._table(**insert_data.dict())

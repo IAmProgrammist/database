@@ -1,64 +1,57 @@
+from sqlalchemy import select, func
+from sqlalchemy.orm import Session
+
+from core.db import engine
+from dto import HomeProfitDTOGenerator
+from models import Home, Contract, Payment, Task
 from repositories.base import Repository
 
 
 class ProfitHouseRepository(Repository):
-    def __init__(self, connection, dtogenerator):
-        super().__init__(connection, "", dtogenerator)
+    def __init__(self):
+        super().__init__(None, HomeProfitDTOGenerator())
 
-    def select(self, keys: list[str]):
-        with self.connection.cursor() as cursor:
-            try:
-                cursor.execute(f'''
-SELECT 
-  home.address as address, 
-  (
-    COALESCE(t1.plus, 0) - COALESCE(t2.minus, 0)
-  ) as profit 
-FROM 
-  home 
-  LEFT JOIN (
-    SELECT 
-      contract.home AS home, 
-      SUM(payment.payment) as plus 
-    FROM 
-      payment 
-      LEFT JOIN contract ON contract.id = payment.contract_id 
-    GROUP BY 
-      contract.home
-  ) as t1 ON t1.home = address 
-  LEFT JOIN (
-    SELECT 
-      task.home AS home, 
-      SUM(task.payment) as minus 
-    FROM 
-      task 
-    GROUP BY 
-      task.home
-  ) as t2 ON t2.home = address 
-ORDER BY 
-  profit;
-''')
-                result = []
+    def select(self):
+        select_model = self.generator.select()
+        if select_model is None:
+            raise NotImplementedError(f"Выбрать из {self._table.__tablename__} невозможно")
 
-                for row in cursor.fetchall():
-                    i = 0
-                    new_element = dict()
-                    for key in keys:
-                        new_element[key] = row[i]
-                        i += 1
+        with Session(engine) as session:
+            plus = (select(
+                Contract.home_address.label("home"),
+                func.sum(Payment.payment).label("plus")
+            )
+                    .select_from(Payment)
+                    .join(Contract, isouter=True)
+                    .group_by(Contract.home_address)
+                    .subquery())
 
-                    result.append(new_element)
+            minus = (select(
+                Task.home_address.label("home"),
+                func.sum(Task.payment).label("minus")
+            )
+                     .select_from(Task)
+                     .group_by(Task.home_address)
+                     .subquery())
 
-                return result
-            except Exception as e:
-                self.connection.rollback()
-                raise e
+            results = session.execute(
+                (select(
+                    Home.address.label("address"),
+                    (
+                            func.coalesce(plus.c.plus, 0) - func.coalesce(minus.c.minus, 0)
+                    ).label("profit")
+                ).select_from(Home)
+                 .join(plus, plus.c.home == Home.address, isouter=True)
+                 .join(minus, minus.c.home == Home.address, isouter=True)
+                 .order_by("profit"))
+            ).all()
+            return [select_model.model_validate({"address": result[0], "profit": result[1]}) for result in results]
 
     def insert(self, data: dict) -> None:
-        raise ModuleNotFoundError("Невозможно добавить элементы в отчёт")
+        return super().insert(data)
 
     def update(self, data: dict, identifier: dict) -> None:
-        raise ModuleNotFoundError("Невозможно обновить элементы в отчёте")
+        return super().update(data, identifier)
 
     def delete(self, identifier: dict) -> None:
-        raise ModuleNotFoundError("Невозможно удалить элемент в отчёте")
+        return super().delete(identifier)

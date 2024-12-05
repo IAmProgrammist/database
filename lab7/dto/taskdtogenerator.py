@@ -9,6 +9,7 @@ class TaskDTOGenerator(BaseDTOGeneartor):
             "completed_date": "Дата окончания",
             "until_date": "Дедлайн",
             "home_address": "Дом",
+            "payment": "Стоимость"
         }
 
     def select(self):

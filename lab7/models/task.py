@@ -5,8 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import date
 from sqlalchemy.sql.schema import ForeignKey
 
-from models.worker import workers_tasks
-
 if TYPE_CHECKING:
     from models import (  # noqa: F401
         Home,
@@ -28,6 +26,6 @@ class Task(Base):
     )
     home: Mapped["Home"] = relationship(back_populates="tasks")
     workers: Mapped[List["Worker"]] = relationship(
-        secondary=workers_tasks,
+        secondary="workers_tasks",
         back_populates="tasks"
     )
