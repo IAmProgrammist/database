@@ -5,9 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from models import (  # noqa: F401
-        Home,
-        Resident,
-        Payment,
         Task
     )
 

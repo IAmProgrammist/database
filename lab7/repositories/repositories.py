@@ -1,6 +1,5 @@
 from dto import ContractDTOGenerator, HomeDTOGenerator, PaymentDTOGenerator, ResidentDTOGenerator, \
-    ResidentContractDTOGenerator, TaskDTOGenerator, WorkerDTOGenerator, WorkerTaskDTOGenerator, NonPayersDTOGenerator, \
-    WorkrsRatingDTOGenerator, HomeProfitDTOGenerator
+    ResidentContractDTOGenerator, TaskDTOGenerator, WorkerDTOGenerator, WorkerTaskDTOGenerator
 from models import Contract, Home, Payment, Resident, Task, Worker, WorkerTask, ResidentContract
 from repositories.base import Repository
 from repositories.non_payers_repository import NonPayersRepository
