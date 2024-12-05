@@ -17,15 +17,15 @@ class RepoTab(QWidget):
         self.__values = []
 
         # Прячем вставку, если DTO вставки пустой
-        if len(self.__repository.generator.insert().values()) == 0:
+        if self.__repository.generator.insert() is None:
             self.ui.pushButton.setVisible(False)
 
         # Прячем обновление, если нечего обновляьт или нельзя идентифицировать запись
-        if len(self.__repository.generator.identifier()) == 0 or len(self.__repository.generator.update()) == 0:
+        if self.__repository.generator.identifier() is None or self.__repository.generator.update() is None:
             self.ui.pushButton_2.setVisible(False)
 
         # Прячем удаление, если нельзя идентифицировать запись
-        if len(self.__repository.generator.identifier()) == 0:
+        if self.__repository.generator.identifier() is None:
             self.ui.pushButton_3.setVisible(False)
 
         self.ui.pushButton_3.clicked.connect(self.__delete_clicked)
@@ -34,13 +34,12 @@ class RepoTab(QWidget):
         self.refetch_table()
 
     def refetch_table(self):
-        select_keys = self.__repository.generator.select()
-        self.__values = self.__repository.select(select_keys)
+        self.__values = self.__repository.select()
         self.__redraw_table()
 
     def __redraw_table(self):
         translations = self.__repository.generator.translations()
-        select_keys = self.__repository.generator.select()
+        select_keys = list(self.__repository.generator.select().model_fields.keys())
         self.ui.tableWidget.setColumnCount(len(select_keys))
         self.ui.tableWidget.setRowCount(len(self.__values))
         self.ui.tableWidget.setHorizontalHeaderLabels(list(map(lambda x: translations[x], select_keys)))
@@ -48,8 +47,9 @@ class RepoTab(QWidget):
         i = 0
         for value in self.__values:
             j = 0
+            show_model = value.model_dump()
             for key in select_keys:
-                self.ui.tableWidget.setItem(i, j, QTableWidgetItem("Пусто" if value[key] is None else str(value[key])))
+                self.ui.tableWidget.setItem(i, j, QTableWidgetItem("Пусто" if show_model[key] is None else str(show_model[key])))
 
                 j += 1
 
@@ -57,20 +57,25 @@ class RepoTab(QWidget):
 
         self.ui.tableWidget.resizeColumnsToContents()
 
+    def __create_clicked_callback(self, parent_dialog, data):
+        try:
+            self.__repository.insert(data)
+            self.refetch_table()
+            return True
+        except Exception as e:
+            whoops = AcceptRejectDialog(parent=parent_dialog,
+                                        title="Произошла ошибка",
+                                        text=repr(e))
+            whoops.show()
+            return False
+
     def __create_clicked(self):
         form_dialog = FormDialog("Создать",
-                                 list(self.__repository.generator.insert().keys()),
+                                 list(self.__repository.generator.insert().model_fields.keys()),
                                  self.__repository.generator.translations(),
-                                 self)
-        if form_dialog.exec() == 1:
-            try:
-                self.__repository.insert(form_dialog.getInfo())
-                self.refetch_table()
-            except Exception as e:
-                whoops = AcceptRejectDialog(parent=self,
-                                            title="Произошла ошибка",
-                                            text=repr(e))
-                whoops.show()
+                                 self,
+                                 self.__create_clicked_callback)
+        form_dialog.exec()
 
     def __delete_clicked(self):
         should_delete = AcceptRejectDialog(parent=self,
@@ -78,12 +83,19 @@ class RepoTab(QWidget):
                                            text=f"Вы собираетесь удалить записи ({len(self.ui.tableWidget.selectionModel().selectedRows())})")
         if should_delete.exec() == 1:
             for row_index in self.ui.tableWidget.selectionModel().selectedRows():
-                selected_value = self.__values[row_index.row()]
-                selected_value_identififer = self.__repository.generator.identifier()
+                select_keys = self.__repository.generator.select().model_fields.keys()
+                selected_value: dict = {}
 
-                select_keys = self.__repository.generator.select()
+                for key, val in self.__values[row_index.row()].__dict__.items():
+                    if key in select_keys:
+                        selected_value[key] = val
+
+                selected_value_identififer_keys = list(self.__repository.generator.identifier().model_fields.keys())
+                selected_value_identififer: dict = {}
+
+                select_keys = list(self.__repository.generator.select().model_fields.keys())
                 for key_index in range(0, len(select_keys)):
-                    if select_keys[key_index] in selected_value_identififer.keys():
+                    if select_keys[key_index] in selected_value_identififer_keys:
                         selected_value_identififer[select_keys[key_index]] = selected_value[select_keys[key_index]]
                 try:
                     self.__repository.delete(selected_value_identififer)
@@ -95,6 +107,34 @@ class RepoTab(QWidget):
 
             self.refetch_table()
 
+    def __update_clicked_callback(self, parent_dialog, data):
+        row_index = self.ui.tableWidget.selectionModel().selectedRows()[0]
+        select_keys = self.__repository.generator.select().model_fields.keys()
+        selected_value: dict = {}
+
+        for key, val in self.__values[row_index.row()].__dict__.items():
+            if key in select_keys:
+                selected_value[key] = val
+
+        selected_value_identififer_keys = list(self.__repository.generator.identifier().model_fields.keys())
+        selected_value_identififer: dict = {}
+
+        select_keys = list(self.__repository.generator.select().model_fields.keys())
+        for key_index in range(0, len(select_keys)):
+            if select_keys[key_index] in selected_value_identififer_keys:
+                selected_value_identififer[select_keys[key_index]] = selected_value[select_keys[key_index]]
+
+        try:
+            self.__repository.update(data, selected_value_identififer)
+            self.refetch_table()
+            return True
+        except Exception as e:
+            whoops = AcceptRejectDialog(parent=parent_dialog,
+                                        title="Произошла ошибка",
+                                        text=repr(e))
+            whoops.show()
+            return False
+
     def __update_clicked(self):
         if len(self.ui.tableWidget.selectionModel().selectedRows()) == 0:
             no_update = AcceptRejectDialog(parent=self,
@@ -104,25 +144,25 @@ class RepoTab(QWidget):
             return
 
         row_index = self.ui.tableWidget.selectionModel().selectedRows()[0]
-        selected_value = self.__values[row_index.row()]
-        selected_value_identififer = self.__repository.generator.identifier()
+        select_keys = self.__repository.generator.select().model_fields.keys()
+        selected_value: dict = {}
 
-        select_keys = self.__repository.generator.select()
+        for key, val in self.__values[row_index.row()].__dict__.items():
+            if key in select_keys:
+                selected_value[key] = val
+
+        selected_value_identififer_keys = list(self.__repository.generator.identifier().model_fields.keys())
+        selected_value_identififer: dict = {}
+
+        select_keys = list(self.__repository.generator.select().model_fields.keys())
         for key_index in range(0, len(select_keys)):
-            if select_keys[key_index] in selected_value_identififer.keys():
+            if select_keys[key_index] in selected_value_identififer_keys:
                 selected_value_identififer[select_keys[key_index]] = selected_value[select_keys[key_index]]
 
         form_dialog = FormDialog("Обновить",
-                                 list(self.__repository.generator.update().keys()),
+                                 list(self.__repository.generator.update().model_fields.keys()),
                                  self.__repository.generator.translations(),
                                  self,
+                                 self.__update_clicked_callback,
                                  selected_value)
-        if form_dialog.exec() == 1:
-            try:
-                self.__repository.update(form_dialog.getInfo(), selected_value_identififer)
-                self.refetch_table()
-            except Exception as e:
-                whoops = AcceptRejectDialog(parent=self,
-                                            title="Произошла ошибка",
-                                            text=repr(e))
-                whoops.show()
+        form_dialog.exec()

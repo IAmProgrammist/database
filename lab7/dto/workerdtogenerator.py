@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.worker import WorkerCreate, WorkerUpdate, WorkerIdentifier, WorkerShow
 
 
 class WorkerDTOGenerator(BaseDTOGeneartor):
@@ -9,23 +10,14 @@ class WorkerDTOGenerator(BaseDTOGeneartor):
             "phone": "Номер телефона"
         }
 
-    def insert(self):
-        return {
-            "inn": None,
-            "email": None,
-            "phone": None
-        }
-
     def select(self):
-        return ["inn", "email", "phone"]
+        return WorkerShow
+
+    def insert(self):
+        return WorkerCreate
 
     def update(self):
-        return {
-            "email": None,
-            "phone": None
-        }
+        return WorkerUpdate
 
     def identifier(self):
-        return {
-            "inn": None,
-        }
+        return WorkerIdentifier

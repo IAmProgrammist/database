@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.reports import WorkersRatingReportShow
 
 
 class WorkrsRatingDTOGenerator(BaseDTOGeneartor):
@@ -9,14 +10,14 @@ class WorkrsRatingDTOGenerator(BaseDTOGeneartor):
             "rating": "Рейтинг"
         }
 
-    def insert(self):
-        return {}
-
     def select(self):
-        return ["inn", "completed", "rating"]
+        return WorkersRatingReportShow
+
+    def insert(self):
+        return None
 
     def update(self):
-        return {}
+        return None
 
     def identifier(self):
-        return {}
+        return None

@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.workertasks import WorkerTasksIdentifier, WorkerTasksShow, WorkerTasksCreate
 
 
 class WorkerTaskDTOGenerator(BaseDTOGeneartor):
@@ -8,21 +9,14 @@ class WorkerTaskDTOGenerator(BaseDTOGeneartor):
             "task_id": "Ид. ном. работы"
         }
 
-    def insert(self):
-        return {
-            "worker_inn": None,
-            "task_id": None
-        }
-
     def select(self):
-        return ["worker_inn", "task_id"]
+        return WorkerTasksShow
+
+    def insert(self):
+        return WorkerTasksCreate
 
     def update(self):
-        return {
-        }
+        return None
 
     def identifier(self):
-        return {
-            "worker_inn": None,
-            "task_id": None
-        }
+        return WorkerTasksIdentifier

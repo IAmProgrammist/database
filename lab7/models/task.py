@@ -27,4 +27,7 @@ class Task(Base):
         ForeignKey("home.address", ondelete="restrict"), nullable=False
     )
     home: Mapped["Home"] = relationship(back_populates="tasks")
-    workers: Mapped[List["Worker"]] = relationship(secondary=workers_tasks)
+    workers: Mapped[List["Worker"]] = relationship(
+        secondary=workers_tasks,
+        back_populates="tasks"
+    )

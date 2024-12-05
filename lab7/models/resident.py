@@ -28,5 +28,6 @@ class Resident(Base):
     email: Mapped[str] = mapped_column(nullable=False)
     phone: Mapped[str] = mapped_column(nullable=False)
     contracts: Mapped[List["Contract"]] = relationship(
-        secondary=residents_contracts
+        secondary=residents_contracts,
+        back_populates="residents"
     )

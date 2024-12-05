@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.residentcontracts import ResidentContractCreate, ResidentContractIdentifier, ResidentContractShow
 
 
 class ResidentContractDTOGenerator(BaseDTOGeneartor):
@@ -8,21 +9,14 @@ class ResidentContractDTOGenerator(BaseDTOGeneartor):
             "contract_id": "Ид. ном. договора",
         }
 
-    def insert(self):
-        return {
-            "resident_passport_data": None,
-            "contract_id": None
-        }
-
     def select(self):
-        return ["resident_passport_data", "contract_id"]
+        return ResidentContractShow
+
+    def insert(self):
+        return ResidentContractCreate
 
     def update(self):
-        return {
-        }
+        return None
 
     def identifier(self):
-        return {
-            "resident_passport_data": None,
-            "contract_id": None
-        }
+        return ResidentContractIdentifier

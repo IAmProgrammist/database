@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.reports import HomeProfitReportShow
 
 
 class HomeProfitDTOGenerator(BaseDTOGeneartor):
@@ -8,14 +9,14 @@ class HomeProfitDTOGenerator(BaseDTOGeneartor):
             "profit": "Прибыль"
         }
 
-    def insert(self):
-        return {}
-
     def select(self):
-        return ["address", "profit"]
+        return HomeProfitReportShow
+
+    def insert(self):
+        return None
 
     def update(self):
-        return {}
+        return None
 
     def identifier(self):
-        return {}
+        return None

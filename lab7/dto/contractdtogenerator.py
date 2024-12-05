@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.contract import ContractCreate, ContractUpdate, ContractIdentifier, ContractShow
 
 
 class ContractDTOGenerator(BaseDTOGeneartor):
@@ -6,28 +7,18 @@ class ContractDTOGenerator(BaseDTOGeneartor):
         return {
             "transaction_date": "Дата начала",
             "until_date": "Дата окончания",
-            "home": "Дом",
+            "home_address": "Дом",
             "id": "Идентификационный номер"
         }
 
-    def insert(self):
-        return {
-            "home": None,
-            "until_date": None,
-            "transaction_date": None
-        }
-
     def select(self):
-        return ["id", "home", "until_date", "transaction_date"]
+        return ContractShow
+
+    def insert(self):
+        return ContractCreate
 
     def update(self):
-        return {
-            "home": None,
-            "until_date": None,
-            "transaction_date": None
-        }
+        return ContractUpdate
 
     def identifier(self):
-        return {
-            "id": None
-        }
+        return ContractIdentifier

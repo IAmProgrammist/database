@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.reports import NonPayersReportShow
 
 
 class NonPayersDTOGenerator(BaseDTOGeneartor):
@@ -9,14 +10,14 @@ class NonPayersDTOGenerator(BaseDTOGeneartor):
             "energy_source": "Энергетический ресурс"
         }
 
-    def insert(self):
-        return {}
-
     def select(self):
-        return ["snp", "debt", "energy_source"]
+        return NonPayersReportShow
+
+    def insert(self):
+        return None
 
     def update(self):
-        return {}
+        return None
 
     def identifier(self):
-        return {}
+        return None

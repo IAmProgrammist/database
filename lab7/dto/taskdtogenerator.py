@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.task import TaskCreate, TaskUpdate, TaskIdentifier, TaskShow
 
 
 class TaskDTOGenerator(BaseDTOGeneartor):
@@ -7,27 +8,17 @@ class TaskDTOGenerator(BaseDTOGeneartor):
             "id": "Идентификационный номер",
             "completed_date": "Дата окончания",
             "until_date": "Дедлайн",
-            "home": "Дом",
-        }
-
-    def insert(self):
-        return {
-            "completed_date": None,
-            "until_date": None,
-            "home": None
+            "home_address": "Дом",
         }
 
     def select(self):
-        return ["id", "completed_date", "until_date", "home"]
+        return TaskShow
+
+    def insert(self):
+        return TaskCreate
 
     def update(self):
-        return {
-            "completed_date": None,
-            "until_date": None,
-            "home": None
-        }
+        return TaskUpdate
 
     def identifier(self):
-        return {
-            "id": None,
-        }
+        return TaskIdentifier

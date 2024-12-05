@@ -26,6 +26,7 @@ class Contract(Base):
     )
     home: Mapped["Home"] = relationship(back_populates="contracts")
     residents: Mapped[List["Resident"]] = relationship(
-        secondary=residents_contracts
+        secondary=residents_contracts,
+        back_populates="contracts"
     )
     payments: Mapped[List["Payment"]] = relationship(back_populates="contract")

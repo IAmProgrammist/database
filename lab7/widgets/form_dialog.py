@@ -6,8 +6,9 @@ from PySide6.QtWidgets import QDialog, QGroupBox, QVBoxLayout, QDialogButtonBox,
 class FormDialog(QDialog):
 
     # constructor
-    def __init__(self, title, values, translations, parent, default_values=None):
+    def __init__(self, title, values, translations, parent, on_accept_callback, default_values=None):
         super(FormDialog, self).__init__(parent=parent)
+        self.__on_accept_callback = on_accept_callback
         self.setWindowTitle(title)
         self.setGeometry(100, 100, 300, 400)
         self.formGroupBox = QGroupBox(title)
@@ -19,12 +20,18 @@ class FormDialog(QDialog):
             self.formValues.append(QLineEdit())
         self.createForm()
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.accepted.connect(self.accepted_override)
         self.buttonBox.rejected.connect(self.reject)
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.formGroupBox)
         mainLayout.addWidget(self.buttonBox)
         self.setLayout(mainLayout)
+
+    def accepted_override(self):
+        data = self.getInfo()
+        if self.__on_accept_callback(self, data):
+            self.accept()
+
 
     def getInfo(self):
         answer = {}

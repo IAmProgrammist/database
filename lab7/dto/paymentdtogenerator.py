@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.payment import PaymentCreate, PaymentUpdate, PaymentIdentifier, PaymentShow
 
 
 class PaymentDTOGenerator(BaseDTOGeneartor):
@@ -12,29 +13,14 @@ class PaymentDTOGenerator(BaseDTOGeneartor):
             "payment": "Сумма"
         }
 
-    def insert(self):
-        return {
-            "id": None,
-            "paid_date": None,
-            "until_date": None,
-            "contract_id": None,
-            "energy_source": None,
-            "payment": None
-        }
-
     def select(self):
-        return ["id", "paid_date", "until_date", "contract_id", "energy_source", "payment"]
+        return PaymentShow
+
+    def insert(self):
+        return PaymentCreate
 
     def update(self):
-        return {
-            "paid_date": None,
-            "until_date": None,
-            "contract_id": None,
-            "energy_source": None,
-            "payment": None
-        }
+        return PaymentUpdate
 
     def identifier(self):
-        return {
-            "id": None,
-        }
+        return PaymentIdentifier

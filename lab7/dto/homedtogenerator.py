@@ -1,4 +1,5 @@
 from dto.base import BaseDTOGeneartor
+from schemas.home import HomeCreate, HomeUpdate, HomeIdentifier, HomeShow
 
 
 class HomeDTOGenerator(BaseDTOGeneartor):
@@ -10,25 +11,14 @@ class HomeDTOGenerator(BaseDTOGeneartor):
             "index": "Индекс"
         }
 
-    def insert(self):
-        return {
-            "address": None,
-            "commisioning": None,
-            "floors": None,
-            "index": None
-        }
-
     def select(self):
-        return ["address", "commisioning", "floors", "index"]
+        return HomeShow
+
+    def insert(self):
+        return HomeCreate
 
     def update(self):
-        return {
-            "commisioning": None,
-            "floors": None,
-            "index": None
-        }
+        return HomeUpdate
 
     def identifier(self):
-        return {
-            "address": None
-        }
+        return HomeIdentifier

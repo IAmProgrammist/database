@@ -26,4 +26,7 @@ class Worker(Base):
     inn: Mapped[str] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(nullable=True)
     phone: Mapped[str] = mapped_column(nullable=True)
-    tasks: Mapped[List["Task"]] = relationship(secondary=workers_tasks)
+    tasks: Mapped[List["Task"]] = relationship(
+        secondary=workers_tasks,
+        back_populates="workers"
+    )

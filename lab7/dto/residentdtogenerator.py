@@ -1,34 +1,26 @@
 from dto.base import BaseDTOGeneartor
+from schemas.resident import ResidentCreate, ResidentUpdate, ResidentIdentifier, ResidentShow
 
 
 class ResidentDTOGenerator(BaseDTOGeneartor):
     def translations(self):
         return {
             "passport_data": "Паспортные данные",
-            "snp": "ФИО",
+            "surname": "Фамилия",
+            "name": "Имя",
+            "patronymics": "Отчество",
             "email": "Электронная почта",
             "phone": "Номер телефона",
         }
 
-    def insert(self):
-        return {
-            "passport_data": None,
-            "snp": None,
-            "email": None,
-            "phone": None
-        }
-
     def select(self):
-        return ["passport_data", "snp", "email", "phone"]
+        return ResidentShow
+
+    def insert(self):
+        return ResidentCreate
 
     def update(self):
-        return {
-            "snp": None,
-            "email": None,
-            "phone": None
-        }
+        return ResidentUpdate
 
     def identifier(self):
-        return {
-            "passport_data": None,
-        }
+        return ResidentIdentifier
