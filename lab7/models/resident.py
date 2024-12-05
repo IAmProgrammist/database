@@ -22,7 +22,9 @@ class Resident(Base):
     __tablename__ = "resident"
 
     passport_data: Mapped[str] = mapped_column(primary_key=True)
-    snp: Mapped[str]
+    surname: Mapped[str]
+    name: Mapped[str]
+    patronymics: Mapped[str] = mapped_column(nullable=True)
     email: Mapped[str] = mapped_column(nullable=False)
     phone: Mapped[str] = mapped_column(nullable=False)
     contracts: Mapped[List["Contract"]] = relationship(
