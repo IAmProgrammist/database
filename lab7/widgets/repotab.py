@@ -2,10 +2,10 @@ import PySide6.QtCore
 import PySide6.QtWidgets
 from PySide6.QtWidgets import QWidget, QTableWidgetItem, QDialog
 
-from lab6.repositories.base import Repository
-from lab6.widgets.accept_reject import AcceptRejectDialog
-from lab6.widgets.form_dialog import FormDialog
-from lab6.widgets.repotab_ui import Ui_Form
+from repositories.base import Repository
+from widgets.accept_reject import AcceptRejectDialog
+from widgets.form_dialog import FormDialog
+from widgets.repotab_ui import Ui_Form
 
 
 class RepoTab(QWidget):

@@ -1,4 +1,4 @@
-from lab6.repositories.base import Repository
+from repositories.base import Repository
 
 
 class NonPayersRepository(Repository):

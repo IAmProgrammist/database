@@ -1,7 +1,7 @@
 from tabulate import tabulate
 from typing import Any
 
-from lab6.dto.base import BaseDTOGeneartor
+from dto.base import BaseDTOGeneartor
 
 
 class Repository:

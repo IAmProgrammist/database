@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QMainWindow
 
-from lab6.repositories.repositories import all_repos
-from lab6.widgets.main_ui import Ui_MainWindow
-from lab6.widgets.repotab import RepoTab
+from repositories.repositories import all_repos
+from widgets.main_ui import Ui_MainWindow
+from widgets.repotab import RepoTab
 
 
 class MainDialog(QMainWindow):
