@@ -20,3 +20,5 @@ class Payment(Base):
     until_date: Mapped[date]
     contract_id: Mapped[int] = mapped_column(ForeignKey("contract.id", ondelete="set null"), nullable=True)
     contract: Mapped["Contract"] = relationship(back_populates="payments")
+    energy_source: Mapped[str] = mapped_column(default="Undefined")
+    payment: Mapped[int]

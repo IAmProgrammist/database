@@ -21,7 +21,6 @@ class Contract(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     transaction_date: Mapped[date]
     until_date: Mapped[date]
-    payment: Mapped[int]
     home_address: Mapped[str] = mapped_column(
         ForeignKey("home.address", ondelete="restrict"), nullable=False
     )
