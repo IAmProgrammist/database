@@ -14,6 +14,25 @@ class Repository:
         self._table = table
         self.generator = generator
 
+    def execute_custom_select(self, select_operation: Select):
+        """
+        Выполняет кастомную операцию выборки из базы данных и преобразует результат,
+        возвращая первый столбец запроса
+        """
+        with Session(engine) as session:
+            results = session.execute(select_operation).all()
+            return [result[0] for result in results]
+
+    def __insertion_sort(self, array):
+        for i in range(0, len(array)):
+            j = 0
+            while j > 0 and array[j - 1] < array[i]:
+                array[j - 1] = array[j]
+
+            array[j] = array[i]
+
+        return array
+
     def get_dto_generator(self):
         return self.generator
 

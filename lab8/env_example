@@ -1,0 +1,2 @@
+POSTGRES_DSN=<postgres_dsn>
+VENV_DIR=venv
