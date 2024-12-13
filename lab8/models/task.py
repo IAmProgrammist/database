@@ -18,7 +18,7 @@ class Task(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     payment: Mapped[int]
     completed_date: Mapped[date] = mapped_column(nullable=True)
-    until_date: Mapped[date]
+    until_date: Mapped[date] = mapped_column(index=True)
     home_address: Mapped[str] = mapped_column(
         ForeignKey("home.address", ondelete="restrict"), nullable=False
     )

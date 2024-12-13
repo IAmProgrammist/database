@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, and_, desc
+from sqlalchemy import select, func, and_, desc, text
 from sqlalchemy.orm import Session
 
 from core.db import engine
@@ -20,50 +20,37 @@ class WorkersRatingRepository(Repository):
             begin_date = '2004-01-01'
             end_date = '2040-01-01'
 
-            completed = (
+            completed_total = (
                 select(
                     WorkerTask.worker_inn,
-                    func.count().label("completed")
+                    func.count().label("total"),
+                    func.count(Task.completed_date).label("completed")
                 )
                 .select_from(WorkerTask)
                 .join(Task)
                 .where(
-                    and_(
-                        Task.completed_date.isnot(None),
-                        Task.until_date > begin_date,
-                        Task.until_date < end_date
-                    )
+                    Task.until_date.between(begin_date, end_date)
                 )
                 .group_by(WorkerTask.worker_inn)
             ).subquery()
 
-            total = (
-                select(
-                    WorkerTask.worker_inn,
-                    func.count().label("total")
-                )
-                .select_from(WorkerTask)
-                .join(Task)
-                .where(
-                    and_(
-                        Task.until_date > begin_date,
-                        Task.until_date < end_date
-                    )
-                )
-                .group_by(WorkerTask.worker_inn)
-            ).subquery()
-
-            results = session.execute(
-                select(
+            main_query = (select(
                     Worker.inn.label("worker_inn"),
-                    func.coalesce(completed.c.completed, 0).label("completed"),
-                    (1.0 * func.coalesce(completed.c.completed, 0) / total.c.total).label("rating")
+                    func.coalesce(completed_total.c.completed, 0).label("completed"),
+                    (1.0 * func.coalesce(completed_total.c.completed, 0) / func.coalesce(completed_total.c.total, 1)).label("rating")
                 )
                 .select_from(Worker)
-                .join(completed, completed.c.worker_inn == Worker.inn, isouter=True)
-                .join(total, total.c.worker_inn == Worker.inn)
-                .order_by(desc("completed"))
+                .join(completed_total, completed_total.c.worker_inn == Worker.inn, isouter=True)
+                .order_by(desc("completed")))
+
+            results = session.execute(
+                main_query
             )
+
+            explain = session.execute(text(f"EXPLAIN ANALYZE {main_query.compile(compile_kwargs={'literal_binds': True})}")).all()
+            print("EXPLAIN ANALYZE of workers rating")
+            for line in explain:
+                print(line[0])
 
             return [select_model.model_validate({"inn": result[0], "completed": result[1], "rating": result[2]}) for result in results]
 

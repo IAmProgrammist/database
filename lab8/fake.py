@@ -10,7 +10,7 @@ from datetime import date, timedelta
 from widgets.main import MainDialog
 import random
 
-MAX_COUNT = 100
+MAX_COUNT = 1000
 
 homes = []
 contracts = []
@@ -126,7 +126,7 @@ if __name__ == "__main__":
             session.commit()
             tasks.append(new_task)
 
-        print("Generating tasks...")
+        print("Generating workers...")
         for i in range(0, MAX_COUNT):
             new_worker = Worker(
                 inn=str(fake.random_int(100_000_000_000, 1_000_000_000_000)),

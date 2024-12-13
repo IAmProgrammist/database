@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -18,8 +18,7 @@ class NonPayersRepository(Repository):
             raise NotImplementedError(f"Выбрать из {self._table.__tablename__} невозможно")
 
         with Session(engine) as session:
-            results = session.execute(
-                select(
+            main_query = (select(
                     func.concat(Resident.surname, " ", Resident.name, " ", Resident.patronymics).label("snp"),
                     func.sum(Payment.payment).label("debt"),
                     Payment.energy_source
@@ -30,8 +29,18 @@ class NonPayersRepository(Repository):
                 .join(Payment)
                 .where(Payment.paid_date.is_(None))
                 .group_by(Resident.passport_data, Payment.energy_source)
-                .order_by("debt")
+                .order_by("debt"))
+
+            results = session.execute(
+                main_query
             ).all()
+
+            explain = session.execute(
+                text(f"EXPLAIN ANALYZE {main_query.compile(compile_kwargs={'literal_binds': True})}")).all()
+            print("EXPLAIN ANALYZE of non payers")
+            for line in explain:
+                print(line[0])
+
             return [select_model.model_validate({"snp": result[0], "debt": result[1], "energy_source": result[2]}) for result in results]
 
     def insert(self, data: dict) -> None:

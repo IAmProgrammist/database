@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, text
 from sqlalchemy.orm import Session
 
 from core.db import engine
@@ -34,8 +34,7 @@ class ProfitHouseRepository(Repository):
                      .group_by(Task.home_address)
                      .subquery())
 
-            results = session.execute(
-                (select(
+            main_query = (select(
                     Home.address.label("address"),
                     (
                             func.coalesce(plus.c.plus, 0) - func.coalesce(minus.c.minus, 0)
@@ -44,7 +43,17 @@ class ProfitHouseRepository(Repository):
                  .join(plus, plus.c.home == Home.address, isouter=True)
                  .join(minus, minus.c.home == Home.address, isouter=True)
                  .order_by("profit"))
+
+            results = session.execute(
+                main_query
             ).all()
+
+            explain = session.execute(
+                text(f"EXPLAIN ANALYZE {main_query.compile(compile_kwargs={'literal_binds': True})}")).all()
+            print("EXPLAIN ANALYZE of house profit")
+            for line in explain:
+                print(line[0])
+
             return [select_model.model_validate({"address": result[0], "profit": result[1]}) for result in results]
 
     def insert(self, data: dict) -> None:
